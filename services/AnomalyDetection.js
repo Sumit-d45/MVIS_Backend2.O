@@ -15,9 +15,7 @@ const fsp = require('fs').promises;
 const path = require('path');
 const sharp = require('sharp');
 
-const {
-  insertAnomalyRecord
-} = require('./dbServices/anomalyDb_service');
+// const {insertAnomalyRecord} = require('./dbServices/anomalyDb_service');
 
 /**
  * Entry Function
@@ -60,9 +58,9 @@ async function processAnomalyDetection(trainFolderPath) {
  */
 async function processCoachFolder(coachPath) {
 
-  const componentFolder = path.join(
+  const coachImagesFolder = path.join(
     coachPath,
-    'Component_Images'
+    'Coach_Images'
   );
 
   const anomalyFolder = path.join(
@@ -70,12 +68,6 @@ async function processCoachFolder(coachPath) {
     'Anomaly_Images'
   );
 
-  // Create Anomaly_Images folder
-  await fsp.mkdir(anomalyFolder, {
-    recursive: true
-  });
-
-  // Find JSON file inside anomaly folder
   const files = await fsp.readdir(anomalyFolder);
 
   const jsonFile = files.find(file =>
@@ -103,26 +95,28 @@ async function processCoachFolder(coachPath) {
 
   const jsonData = JSON.parse(jsonContent);
 
-  // Support array or single object
   const imageRecords = Array.isArray(jsonData)
     ? jsonData
     : [jsonData];
 
   for (const record of imageRecords) {
+
     await processImageRecord(
       record,
-      componentFolder,
+      coachImagesFolder,
       anomalyFolder
     );
+
   }
 }
+
 
 /**
  * Process Single Image Record
  */
 async function processImageRecord(
   record,
-  componentFolder,
+  coachImagesFolder,
   anomalyFolder
 ) {
 
@@ -131,7 +125,7 @@ async function processImageRecord(
   if (!imageName) return;
 
   const imagePath = path.join(
-    componentFolder,
+    coachImagesFolder,
     imageName
   );
 
@@ -140,18 +134,20 @@ async function processImageRecord(
     return;
   }
 
-  const anomalies = record.anomalies || [];
+  // IMPORTANT CHANGE
+  const anomalies = record.detections || [];
 
   for (let i = 0; i < anomalies.length; i++) {
+
     await saveAnomalyFiles(
       imagePath,
       anomalies[i],
       anomalyFolder,
       i
     );
+
   }
 }
-
 /**
  * Save Crop + Main Annotated Image
  */
@@ -301,10 +297,10 @@ async function saveAnomalyFiles(
     const referenceImagePath =
       path.parse(mainFileName).name;
 
-    await insertAnomalyRecord(
-      anomalyComponentName,
-      referenceImagePath
-    );
+  //  await insertAnomalyRecord(
+  //    anomalyComponentName,
+  //    referenceImagePath
+  //  );
 
     console.log(
       `Inserted DB Record: ${anomalyComponentName}`

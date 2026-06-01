@@ -15,7 +15,7 @@ async function insertComponentRecord(
   const isActive = true;
 
   const query = `
-    INSERT INTO MST_Component (
+    INSERT INTO TXN_MVISDetectionLog (
       ComponentCode,
       ComponentName,
       ReferenceImagePath,

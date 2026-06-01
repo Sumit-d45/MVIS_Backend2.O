@@ -1,20 +1,48 @@
-// testcomponentdetection.js
+const {
+  getTrainFolders
+} = require('../folderScan');
 
 const {
   processComponentDetection
 } = require('../detectComponentImage');
 
 (async () => {
+
   try {
-    // Train folder path
-    const trainFolderPath =
-      'C:\\Users\\SUMIT\\Mvis_bv\\2026_05_15_10_01_26_2000';
 
-    await processComponentDetection(trainFolderPath);
+    const trainFolders =
+      await getTrainFolders();
 
-    console .log('✅ Component detection test completed successfully.');
+    console.log(
+      `Found ${trainFolders.length} train folders`
+    );
+
+    for (const trainFolder of trainFolders) {
+
+      console.log(
+        `\nProcessing: ${trainFolder}`
+      );
+
+      await processComponentDetection(
+        trainFolder
+      );
+
+      console.log(
+        `Completed: ${trainFolder}`
+      );
+    }
+
+    console.log(
+      '\n✅ Component Detection Test Completed'
+    );
+
   } catch (error) {
-    console.error('❌ Test failed:', error.message);
+
+    console.error(
+      '\n❌ Component Detection Test Failed'
+    );
+
     console.error(error);
   }
+
 })();

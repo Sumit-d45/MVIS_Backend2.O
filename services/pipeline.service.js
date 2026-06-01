@@ -100,7 +100,7 @@ module.exports = {
 
 */
 const { scanRawFolders } = require('./file_service');
-const { checkTrainExists, waitForTrainProcessed, getAxleTimeline } = require('./db_service');
+const { checkTrainExists, waitForTrainProcessed, getAxleTimeline } = require('./testing/db_service');
 const { detectValidImages } = require('./fastapi.service'); // ✅ FIXED
 const { mapToCoaches } = require('./coachMapper_service');
 const { createCoachFolders } = require('./coachfolder');
